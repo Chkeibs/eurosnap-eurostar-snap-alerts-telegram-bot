@@ -1,0 +1,38 @@
+{
+  "telegramUsers/demo-chat-001": {
+    "chatId": "demo-chat-001",
+    "username": "demo_user",
+    "hasStarted": true,
+    "premiumUntil": "2026-07-01T00:00:00.000Z",
+    "pendingAlertDraft": null,
+    "lastAlertedAlertId": "alert-demo-001",
+    "updatedAt": "2026-06-12T10:00:00.000Z"
+  },
+  "alerts/alert-demo-001": {
+    "id": "alert-demo-001",
+    "chatId": "demo-chat-001",
+    "originLabel": "Paris",
+    "destinationLabel": "Amsterdam",
+    "travelDate": "2026-06-24",
+    "timeSlot": "morning",
+    "seatPreference": "allocated",
+    "maxPrice": 49,
+    "active": true,
+    "seenOfferKeys": [
+      "demo-offer-fingerprint-001"
+    ],
+    "nextEligibleCheckAt": "2026-06-13T08:00",
+    "lastNotifiedAt": "2026-06-12T09:50:00.000Z"
+  },
+  "searchJobs/continental-paris-amsterdam-2026-06-24": {
+    "direction": "paris_amsterdam",
+    "originLabel": "Paris",
+    "destinationLabel": "Amsterdam",
+    "travelDate": "2026-06-24",
+    "active": true,
+    "activeAlertCount": 3,
+    "lastStatus": "available",
+    "lastOfferCount": 2,
+    "nextEligibleCheckAt": "2026-06-13T08:00"
+  }
+}

@@ -1,77 +1,144 @@
 # Eurosnap | Eurostar Snap Alerts Telegram Bot
 
-EuroSnap is a Telegram bot that monitors Eurostar Snap availability and sends fast alerts when matching last-minute offers appear.
+EuroSnap is a live Telegram bot that monitors Eurostar Snap availability and sends fast alerts when matching last-minute train offers appear.
 
-- Website: https://eurosnap-422cf.web.app
-- Telegram bot: https://t.me/Eurosnapbot
+- Try the live Telegram bot: https://t.me/Eurosnapbot
+- Check the website: https://eurosnap-422cf.web.app
+- Premium access: €1.99/month, roughly €2/month
 
-## What It Does
+## What EuroSnap Does
 
-Eurostar Snap tickets can appear and disappear quickly. EuroSnap lets a user create an alert with:
+Eurostar Snap tickets can appear, disappear, and change quickly. EuroSnap helps users stop refreshing manually by letting them create automated Telegram alerts.
 
-- a route
+A user can choose:
+
+- a Eurostar Snap route
 - a travel date
 - a preferred time slot
-- optional seat-type preferences on supported routes
+- a seat preference on supported routes
+- optional departure-window filters
 - an optional maximum price
 
-The production bot then checks availability automatically and sends a Telegram notification when a matching offer is found.
+When the production system finds a matching offer, the bot sends a clear Telegram notification with the price, trip details, and booking link.
 
 ## Why This Repository Is Partial
 
-This is a public showcase repository. It is intentionally not the full production codebase and cannot be cloned to run the real bot.
+This repository is a public technical showcase. It is intentionally not the full production codebase and cannot be cloned to run the real bot.
 
-The private production system includes Firebase Functions, Firestore persistence, Telegram webhooks, Stripe billing, Eurostar Snap providers, admin tooling, operational scripts, and private configuration. Those pieces are not published here to protect the product, users, and operational security.
+The private production system includes Firebase Functions, Firestore persistence, Telegram webhooks, Stripe billing, Eurostar Snap availability providers, admin tooling, support tooling, operational scripts, and private configuration. Those pieces are not published here to protect the product, users, and operational security.
+
+What this repo does provide is a credible view of the engineering style: architecture notes, public website source, Remotion animation code, anonymized mock data, diagrams, and selected non-runnable TypeScript excerpts.
+
+## Technical Highlights
+
+- Firebase Functions v2 handles scheduled monitoring, Telegram webhook entrypoints, and billing redirects in production.
+- Firestore stores Telegram users, alert criteria, shared search jobs, notification state, and support tickets.
+- Telegram Bot API powers the user flow, alert setup, inline buttons, and offer notifications.
+- Stripe Checkout and Billing Portal manage the subscription flow.
+- Shared route/date jobs reduce duplicate checks when several users monitor similar trips.
+- Policy-based scheduling changes cadence based on proximity to travel date and seat source.
+- Notification deduplication prevents users from receiving the same matching offer repeatedly.
+- Remotion/React is used for product video generation and marketing assets.
+
+## Architecture
+
+The production system follows a simple pattern: Telegram collects user intent, Firestore stores alert state, a scheduler checks due shared jobs, and matching results are sent back through Telegram.
+
+```mermaid
+flowchart LR
+  User["Telegram user"] --> Bot["Telegram bot flow"]
+  Bot --> Functions["Firebase Functions"]
+  Functions --> Firestore["Firestore"]
+  Scheduler["Scheduled monitor"] --> Functions
+  Functions --> Provider["Snap availability provider"]
+  Provider --> Functions
+  Functions --> Telegram["Telegram notifications"]
+  Stripe["Stripe billing"] --> Functions
+```
+
+More detailed diagrams are available in:
+
+- [Architecture notes](./ARCHITECTURE.md)
+- [Alert creation flow](./showcase/diagrams/alert-creation-flow.md)
+- [Monitoring flow](./showcase/diagrams/monitoring-flow.md)
 
 ## What Is Included
 
 - `public/`: the public EuroSnap website source that is already visible online.
-- `video-remotion/`: the Remotion/React source for a EuroSnap promo animation.
-- `showcase/backend-excerpts/`: selected non-runnable TypeScript excerpts that demonstrate the backend approach without exposing production implementation details.
+- `video-remotion/`: Remotion/React source for a EuroSnap promo animation.
+- `showcase/backend-excerpts/`: selected TypeScript excerpts inspired by the private backend.
+- `showcase/diagrams/`: Mermaid diagrams showing the high-level flows.
+- `showcase/mock-data/`: anonymized example Firestore-style records.
 
-## Technical Overview
+## Backend Showcase
 
-The private production system is built around:
+The backend excerpts are intentionally limited. They show the shape of the system without exposing production entrypoints, providers, database writes, billing internals, or admin tooling.
 
-- Firebase Functions v2 for scheduled jobs and webhooks.
-- Firestore for users, alerts, and shared search jobs.
-- Telegram Bot API for the user flow and notifications.
-- Stripe Checkout and Billing Portal for subscriptions.
-- TypeScript for the main backend.
-- Python for support tooling.
-- Remotion/React for video generation.
+Included examples:
 
-The main design idea is to group multiple user alerts into shared route/date search jobs. A single search result can then be filtered per user by time slot, seat type, departure window, and price.
+- simplified domain types
+- monitoring-window and cadence policy
+- per-alert offer filtering
+- safe Telegram message formatting
+- provider interface design without real scraping/parsing logic
+- illustrative tests for policy and filtering behavior
 
-## Monitoring Model
+These files are useful for code review and portfolio purposes, but they are not enough to run the EuroSnap production bot.
 
-The production bot uses policy-based scheduling rather than checking every alert blindly.
+## Product Design Decisions
 
-- Farther-out tickets are checked less often.
-- Nearer travel dates are checked more frequently.
-- Different seat sources and route groups can have different monitoring windows.
-- Notifications are deduplicated so users do not receive the same matching offer again and again.
+**Shared search jobs**
 
-The simplified policy excerpt in this repository shows the shape of that idea without the full production implementation.
+Several users may monitor the same route and date with different preferences. Instead of checking once per user, the private backend groups compatible alerts into shared route/date jobs and filters the result for each alert.
+
+**Policy-based checks**
+
+The bot does not check every alert constantly. In production, eligibility is decided by route group, seat source, travel date, and the current Europe/Paris time window.
+
+**Offer-level deduplication**
+
+After a matching offer is sent, the alert can keep monitoring. The user is notified again only when a different matching offer appears, such as another time slot, price, or seat source.
+
+**Paid access**
+
+The live bot uses a low-cost subscription model. Premium access is currently €1.99/month, giving users access to automated monitoring instead of manual checking.
 
 ## Repository Structure
 
 ```text
 .
+├── ARCHITECTURE.md
 ├── public/
 │   └── Static website files
 ├── video-remotion/
 │   └── Remotion promo video source
 └── showcase/
-    └── backend-excerpts/
-        └── Selected TypeScript excerpts, not production-runnable
+    ├── backend-excerpts/
+    │   └── Non-runnable TypeScript excerpts
+    ├── diagrams/
+    │   └── Mermaid flow diagrams
+    └── mock-data/
+        └── Anonymized Firestore-style examples
 ```
 
-## Public Links
+## Running The Included Public Pieces
 
-- Try the bot: https://t.me/Eurosnapbot
-- Visit the site: https://eurosnap-422cf.web.app
+The public website can be opened directly from `public/index.html`.
 
-## Note
+The Remotion video source can be explored from `video-remotion/`:
+
+```console
+npm install
+npm run dev
+```
+
+The backend excerpt files are not wired as a deployable backend. They are intentionally published as readable, isolated engineering examples.
+
+## Links
+
+- Live bot: https://t.me/Eurosnapbot
+- Website: https://eurosnap-422cf.web.app
+
+## Disclaimer
 
 EuroSnap is an independent project and is not affiliated with Eurostar.
