@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Eurosnap | Eurostar Snap Alerts Telegram Bot</title>
+    <meta
+      name="description"
+      content="EuroSnap is a Telegram bot that monitors Eurostar Snap offers and sends fast alerts with the latest price and purchase link."
+    >
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <style>
+      :root {
+        --bg-white: #ffffff;
+        --bg-light: #f8fafc;
+        --bg-blue-light: #f0f7ff;
+        --text-main: #0f172a;
+        --text-muted: #475569;
+        --primary-blue: #0066cc;
+        --primary-blue-hover: #004b99;
+        --border-color: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--text-main);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      /* Container */
+      .container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Typography */
+      h1, h2, h3 {
+        font-family: "Instrument Serif", serif;
+        margin: 0;
+        color: var(--text-main);
+        font-weight: 400;
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        color: var(--text-muted);
+      }
+
+      /* Header */
+      header {
+        padding: 24px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+      }
+
+      .nav-content {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .logo-img {
+        height: 64px;
+        width: auto;
+      }
+
+      .logo-text {
+        font-family: "Instrument Serif", serif;
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        text-decoration: none;
+      }
+
+      /* Buttons */
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 16px 36px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.15rem;
+        transition: all 0.3s ease;
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, #0078d4, #004f8f);
+        color: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+      }
+
+      .button-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0, 102, 204, 0.35);
+      }
+
+      .button-primary svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 180px 0 100px;
+        background: 
+          radial-gradient(circle at 50% 0%, var(--bg-blue-light), transparent 60%),
+          radial-gradient(circle at 20% 80%, rgba(245, 158, 11, 0.05), transparent 40%);
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        text-align: center;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        border-radius: 999px;
+        background: var(--bg-blue-light);
+        color: var(--primary-blue);
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        border: 1px solid rgba(0, 102, 204, 0.1);
+      }
+
+      .hero h1 {
+        font-size: clamp(3.5rem, 7vw, 5.5rem);
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        margin-bottom: 28px;
+        color: var(--text-main);
+      }
+      
+      .pricing-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 24px;
+        background: rgba(0, 102, 204, 0.06);
+        border: 1px solid rgba(0, 102, 204, 0.15);
+        border-radius: 999px;
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 32px;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      
+      .pricing-badge .dot {
+        color: rgba(0, 102, 204, 0.3);
+        font-size: 1.2rem;
+      }
+
+      .hero .lead {
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        line-height: 1.7;
+        max-width: 680px;
+      }
+
+      /* Compact Features & Details */
+      .info-section {
+        padding: 80px 0;
+        background-color: var(--bg-white);
+        border-top: 1px solid var(--border-color);
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+      }
+
+      .info-block {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      .info-block h2 {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+      }
+
+      .list-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .list-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--bg-blue-light);
+        color: var(--primary-blue);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .list-number {
+        font-family: "Instrument Serif", serif;
+        font-size: 2.5rem;
+        color: rgba(0, 102, 204, 0.2);
+        line-height: 1;
+        width: 48px;
+        flex-shrink: 0;
+      }
+
+      .list-content h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .list-content p {
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      /* Call to action */
+      .cta {
+        padding: 80px 0;
+        background: linear-gradient(135deg, var(--bg-light), var(--bg-blue-light));
+        text-align: center;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .cta h2 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .cta p {
+        font-size: 1.15rem;
+        max-width: 500px;
+        margin: 0 auto 32px;
+      }
+
+      /* Footer */
+      footer {
+        padding: 40px 0;
+        background-color: var(--bg-white);
+        border-top: 1px solid var(--border-color);
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .footer-brand span {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.8rem;
+        color: var(--text-main);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 32px;
+      }
+
+      .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.2s;
+        font-size: 0.95rem;
+      }
+
+      .footer-links a:hover {
+        color: var(--primary-blue);
+      }
+
+      .footer-disclaimer {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+
+      .footer-disclaimer p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      @media (max-width: 960px) {
+        .info-grid {
+          grid-template-columns: 1fr;
+          gap: 60px;
+        }
+
+        .hero {
+          padding: 140px 0 60px;
+        }
+
+        .info-section {
+          padding: 60px 0;
+        }
+        
+        .pricing-badge {
+          font-size: 0.85rem;
+          padding: 8px 16px;
+          white-space: normal;
+          flex-wrap: wrap;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .footer-content {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .footer-links {
+          flex-direction: column;
+          gap: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    
+    <header>
+      <div class="container nav-content">
+        <img src="/logo.png" alt="EuroSnap Logo" class="logo-img">
+        <a href="/" class="logo-text">EuroSnap</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="eyebrow">Eurostar Snap Monitor</div>
+            <h1>Track Eurostar Snap deals in real time</h1>
+            
+            <p class="lead">
+              EuroSnap monitors Eurostar Snap availability for your selected routes, dates, and prices, delivering instant alerts straight to your phone.
+            </p>
+
+            <div class="pricing-badge">
+              <span>✨ Only €1.99/month</span>
+              <span class="dot">•</span>
+              <span>♾️ Unlimited alerts</span>
+              <span class="dot">•</span>
+              <span>⏳ Checked every 5 mins</span>
+              <span class="dot">•</span>
+              <span>🚨 Up to 3 simultaneous alerts</span>
+            </div>
+            
+            <a class="button button-primary" href="https://t.me/Eurosnapbot" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.896-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.483-1.524 5.805-2.529 6.967-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+              Open Telegram Bot
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="container info-grid">
+          
+          <div class="info-block">
+            <div>
+              <h2>Fast & direct</h2>
+              <p>Built for instant Snap drops without the manual refreshing.</p>
+            </div>
+            
+            <div class="list-item">
+              <div class="list-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div class="list-content">
+                <h3>Telegram alerts</h3>
+                <p>Instant notification flow straight to your app.</p>
+              </div>
+            </div>
+            
+            <div class="list-item">
+              <div class="list-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="list-content">
+                <h3>Smart checks</h3>
+                <p>Adaptive monitoring windows leading up to your trip.</p>
+              </div>
+            </div>
+            
+            <div class="list-item">
+              <div class="list-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+              <div class="list-content">
+                <h3>Direct purchase link</h3>
+                <p>One tap takes you straight back to the Eurostar checkout.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div>
+              <h2>How it works</h2>
+              <p>Three simple steps to secure your next journey.</p>
+            </div>
+
+            <div class="list-item">
+              <div class="list-number">01</div>
+              <div class="list-content">
+                <h3>Set your preferences</h3>
+                <p>Users choose a route, a travel date, a preferred time slot, and an optional maximum price.</p>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-number">02</div>
+              <div class="list-content">
+                <h3>Automated scanning</h3>
+                <p>The service runs automatically in the background and increases monitoring density when the trip gets closer.</p>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-number">03</div>
+              <div class="list-content">
+                <h3>Get notified</h3>
+                <p>EuroSnap checks for matching Snap offers and sends a clear alert with the latest price and booking link.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container">
+          <h2>Ready to catch your train?</h2>
+          <p>Set up your first alert in seconds and let us do the refreshing for you.</p>
+          <a class="button button-primary" href="https://t.me/Eurosnapbot" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.896-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.483-1.524 5.805-2.529 6.967-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            Open Telegram Bot
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img src="/logo.png" alt="" style="height: 56px; width: auto;">
+            <span>EuroSnap</span>
+          </div>
+          <div class="footer-links">
+            <a href="mailto:contact@eurosnapbot.com">Contact us: contact@eurosnapbot.com</a>
+            <a href="https://t.me/Eurosnapbot" target="_blank" rel="noreferrer">Telegram bot: @Eurosnapbot</a>
+          </div>
+        </div>
+        <div class="footer-disclaimer">
+          <p>This service is independent and not affiliated with Eurostar. It uses publicly available data and does not access restricted systems. If required, we are happy to comply with any applicable guidelines or explore an official partnership.</p>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+</html>
