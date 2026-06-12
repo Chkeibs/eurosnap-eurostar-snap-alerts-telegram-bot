@@ -2,9 +2,15 @@
 
 EuroSnap is a live Telegram bot that monitors Eurostar Snap availability and sends fast alerts when matching last-minute train offers appear.
 
-- Try the live Telegram bot: https://t.me/Eurosnapbot
-- Check the website: https://eurosnap-422cf.web.app
-- Price: €1.99/month
+You set your dates, route & price → and get notified as soon as a matching deal appears 🎟️
+
+✨ €1.99/month
+♾️ Unlimited alerts
+🚨 Up to 3 active alerts at once
+
+👉 Website: https://eurosnapbot.com/
+👉 Bot: https://t.me/Eurosnapbot
+
 
 ## What EuroSnap Does
 
