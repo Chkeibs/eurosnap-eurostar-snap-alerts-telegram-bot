@@ -4,7 +4,7 @@ EuroSnap is a live Telegram bot that monitors Eurostar Snap availability and sen
 
 - Try the live Telegram bot: https://t.me/Eurosnapbot
 - Check the website: https://eurosnap-422cf.web.app
-- Premium access: €1.99/month, roughly €2/month
+- Price: €1.99/month
 
 ## What EuroSnap Does
 
